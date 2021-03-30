@@ -35,24 +35,29 @@ def prescaler_rough_seacrh(freq):
 
 
 if __name__ == '__main__':
+    input_accuracy = float(input('Введите желаемую точность(например 0.0001, по умолчанию динамическая)\n') or '-1')
+    target_compare = int(input('Введите процент заполнения (compare, от 1% до 99%, по умолчанию 50%)\n') or '50')
     for i in range(1,10001):
         frequency = i
-        target_accuracy = i/10000
+        if input_accuracy == -1:
+            target_accuracy = frequency/10000
+        else:
+            target_accuracy=input_accuracy
         scale = prescaler_rough_seacrh(frequency)
-        result_freq = conversion(frequency, scale, 50,False)
+        result_freq = conversion(frequency, scale, target_compare,False)
         accuracy = abs(result_freq - frequency)
         if accuracy < target_accuracy:
-            conversion(frequency, scale, 50, True)
+            conversion(frequency, scale, target_compare, True)
             continue
         else:
             #print(f'Not accurate enough, accuracy is {accuracy}')
             max_accuracy = 1000
             max_accuracy_scale = scale
             for i in range(1, 65535):
-                accuracy = abs(frequency - conversion(frequency, i, 50, False))
+                accuracy = abs(frequency - conversion(frequency, i, target_compare, False))
                 if accuracy < max_accuracy:
                     max_accuracy = accuracy
                     max_accuracy_scale = i
                 if max_accuracy < target_accuracy:
                     break
-            conversion(frequency, max_accuracy_scale, 50, True)
+            conversion(frequency, max_accuracy_scale, target_compare, True)
